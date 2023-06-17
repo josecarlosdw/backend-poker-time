@@ -1,0 +1,19 @@
+{
+  "name": "backend-poker-time",
+  "version": "1.0.0",
+  "description": "backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josecarlosdw/backend-poker-time.git"
+  },
+  "author": "josecarlos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josecarlosdw/backend-poker-time/issues"
+  },
+  "homepage": "https://github.com/josecarlosdw/backend-poker-time#readme"
+}
