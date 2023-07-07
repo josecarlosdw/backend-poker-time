@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/josecarlosdw/backend-poker-time#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.7.1"
   }
 }
