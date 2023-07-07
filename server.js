@@ -6,6 +6,11 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, { cors: { origin: '*' } });
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 app.use(express.static('dist/planning-poker-app'));
 
 // Lista de participantes na sala
