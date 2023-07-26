@@ -98,24 +98,6 @@ async function getRooms() {
   }
 }
 
-// Exemplo de inserção de uma nova sala no banco de dados
-async function createRoom(roomData) {
-  const { nome, descricao } = roomData;
-  const client = await pool.connect();
-  try {
-    const result = await client.query(
-      'INSERT INTO salas (nome, descricao) VALUES ($1, $2) RETURNING *',
-      [nome, descricao]
-    );
-    return result.rows[0];
-  } catch (err) {
-    console.error('Erro ao criar a sala:', err);
-    return null;
-  } finally {
-    client.release();
-  }
-}
-
 const port = process.env.PORT || 3000;
 
 server.listen(port, () => {
