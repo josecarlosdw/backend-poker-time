@@ -13,7 +13,7 @@ const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: 'https://poker-time-oep1.onrender.com',
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
