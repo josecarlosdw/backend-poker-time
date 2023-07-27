@@ -6,8 +6,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const { createRoom } = require('./app.component');
-
 const { Pool } = require('pg');
 
 // Configurações de conexão fornecidas pelo ElephantSQL
