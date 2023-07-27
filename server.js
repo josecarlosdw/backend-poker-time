@@ -5,10 +5,20 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-const io = socketIO(server, { cors: {
+/* const io = socketIO(server, { cors: {
   credentials: true,
   origin: '*',
-} });
+} }); */
+
+
+const io = socketIO(server, {
+  cors: {
+    origin: 'https://poker-time-oep1.onrender.com',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  }
+});
 
 const { Pool } = require('pg');
 
