@@ -5,20 +5,11 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-/* const io = socketIO(server, { cors: {
+const io = socketIO(server, { cors: {
   credentials: true,
   origin: '*',
-} }); */
+} });
 
-
-const io = socketIO(server, {
-  cors: {
-    origin: 'https://poker-time-oep1.onrender.com',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  }
-});
 
 const { Pool } = require('pg');
 
@@ -30,10 +21,6 @@ const pool = new Pool({
   password: 'Mejvz768-LLtyWABgmzp4lYgzc2TzgSz',
   port: 5432, // A porta padrão do PostgreSQL é 5432
 });
-
-/* const socket = io('https://poker-time-oep1.onrender.com', {
-  transports: ['polling', 'websocket'],
-}); */
 
 const cors = require('cors');
 app.use(cors());
