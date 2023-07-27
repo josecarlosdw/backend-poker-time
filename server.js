@@ -13,7 +13,7 @@ const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: '*',
+    origin: 'https://poker-time-oep1.onrender.com',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
@@ -37,17 +37,6 @@ const pool = new Pool({
 
 const cors = require('cors');
 app.use(cors());
-
-// Adicionar middleware para permitir CORS (Cross-Origin Resource Sharing)
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://poker-time-oep1.onrender.com');
-  // Outras configurações de CORS, se necessário
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-
 
 // Adicionar o middleware para analisar o corpo da solicitação como JSON
 app.use(express.json());
