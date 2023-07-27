@@ -17,9 +17,9 @@ const pool = new Pool({
   port: 5432, // A porta padrão do PostgreSQL é 5432
 });
 
-const socket = io('https://poker-time-oep1.onrender.com', {
+/* const socket = io('https://poker-time-oep1.onrender.com', {
   transports: ['polling', 'websocket'],
-});
+}); */
 
 const cors = require('cors');
 app.use(cors());
