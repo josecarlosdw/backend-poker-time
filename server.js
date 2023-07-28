@@ -1,14 +1,21 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 
-const io = socketIO(server, { cors: {
+// Permitir acesso a partir de 'https://poker-time-oep1.onrender.com'
+app.use(cors({
+  origin: 'https://poker-time-oep1.onrender.com',
+  credentials: true,
+}));
+
+/* const io = socketIO(server, { cors: {
   credentials: true,
   origin: '*',
-} });
+} }); */
 
 
 const { Pool } = require('pg');
