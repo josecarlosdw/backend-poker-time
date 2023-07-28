@@ -6,12 +6,15 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: '*',
-  credentials: true,
-}));
+const io = socketIO(server, {
+  cors: {
+    credentials: true,
+    origin: '*',
+  },
+});
 
-const io = socketIO(server);
+// Use o middleware do cors
+app.use(cors());
 
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
