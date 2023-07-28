@@ -12,6 +12,7 @@ const io = socketIO(server, { cors: {
 
 
 const { Pool } = require('pg');
+const { v4: uuidv4 } = require('uuid');
 
 // Configurações de conexão fornecidas pelo ElephantSQL
 const pool = new Pool({
@@ -22,13 +23,43 @@ const pool = new Pool({
   port: 5432, // A porta padrão do PostgreSQL é 5432
 });
 
-const cors = require('cors');
-app.use(cors());
-
 // Adicionar o middleware para analisar o corpo da solicitação como JSON
 app.use(express.json());
-
 app.use(express.static('dist/planning-poker-app'));
+
+async function createRoom({ nome, descricao }) {
+  const client = await pool.connect();
+  try {
+    // Gerar um código único usando UUID
+    const roomCode = uuidv4();
+
+    // Inserir os dados da sala no banco de dados
+    const query = 'INSERT INTO salas (nome, descricao, room_code) VALUES ($1, $2, $3) RETURNING *';
+    const values = [nome, descricao, roomCode];
+    const result = await client.query(query, values);
+
+    return result.rows[0];
+  } catch (err) {
+    console.error('Erro ao criar a sala:', err);
+    throw err; // Propagar o erro para o manipulador de rotas
+  } finally {
+    client.release();
+  }
+}
+
+// Exemplo de consulta ao banco de dados
+async function getRooms() {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('SELECT * FROM salas');
+    return result.rows;
+  } catch (err) {
+    console.error('Erro ao obter as salas:', err);
+    return [];
+  } finally {
+    client.release();
+  }
+}
 
 // Rota para buscar todas as salas
 app.get('/api/salas', async (req, res) => {
@@ -82,20 +113,6 @@ io.on('connection', (socket) => {
     io.emit('participantJoined', participant);
   });
 });
-
-// Exemplo de consulta ao banco de dados
-async function getRooms() {
-  const client = await pool.connect();
-  try {
-    const result = await client.query('SELECT * FROM salas');
-    return result.rows;
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    return [];
-  } finally {
-    client.release();
-  }
-}
 
 const port = process.env.PORT || 3000;
 
