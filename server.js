@@ -22,7 +22,7 @@ const { v4: uuidv4 } = require('uuid');
 //postgres://ewtixgnc:Mejvz768-LLtyWABgmzp4lYgzc2TzgSz@silly.db.elephantsql.com/ewtixgnc
 const pool = new Pool({
   user: 'ewtixgnc',
-  host: 'postgres://ewtixgnc:Mejvz768-LLtyWABgmzp4lYgzc2TzgSz@silly.db.elephantsql.com/ewtixgnc',
+  host: 'silly.db.elephantsql.com',
   database: 'ewtixgnc',
   password: 'Mejvz768-LLtyWABgmzp4lYgzc2TzgSz',
   port: 5432, // A porta padrão do PostgreSQL é 5432
