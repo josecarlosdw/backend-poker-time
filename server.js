@@ -6,14 +6,12 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 
-// Permitir acesso a partir de 'https://poker-time-oep1.onrender.com'
 app.use(cors({
-  origin: 'https://poker-time-oep1.onrender.com',
+  origin: '*',
   credentials: true,
 }));
 
 const io = socketIO(server);
-
 
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
