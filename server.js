@@ -33,6 +33,14 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
+socket.on('disconnect', () => {
+  console.log('Participante desconectado');
+  const disconnectedParticipant = findDisconnectedParticipant(socket.id);
+  if (disconnectedParticipant) {
+    io.emit('participantLeft', disconnectedParticipant.name);
+  }
+});
+
 async function createRoom({ nome, descricao }) {
   const client = await pool.connect();
   try {
