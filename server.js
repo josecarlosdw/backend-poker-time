@@ -12,10 +12,7 @@ app.use(cors({
   credentials: true,
 }));
 
-/* const io = socketIO(server, { cors: {
-  credentials: true,
-  origin: '*',
-} }); */
+const io = socketIO(server);
 
 
 const { Pool } = require('pg');
