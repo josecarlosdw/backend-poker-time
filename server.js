@@ -15,6 +15,7 @@ const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
 
 // Configurações de conexão fornecidas pelo ElephantSQL
+//postgres://ewtixgnc:Mejvz768-LLtyWABgmzp4lYgzc2TzgSz@silly.db.elephantsql.com/ewtixgnc
 const pool = new Pool({
   user: 'ewtixgnc',
   host: 'postgres://ewtixgnc:Mejvz768-LLtyWABgmzp4lYgzc2TzgSz@silly.db.elephantsql.com/ewtixgnc',
