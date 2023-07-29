@@ -33,6 +33,62 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
+// Função para adicionar um participante à tabela
+async function addParticipant(participant) {
+  const client = await pool.connect();
+  try {
+    const query = 'INSERT INTO participants (name, selectedCard, roomCode) VALUES ($1, $2, $3) RETURNING *';
+    const values = [participant.name, participant.selectedCard, participant.roomCode];
+    const result = await client.query(query, values);
+    return result.rows[0];
+  } catch (err) {
+    console.error('Erro ao adicionar o participante:', err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+// Função para obter a lista de participantes na sala com o código especificado
+async function getParticipantsByRoomCode(roomCode) {
+  const client = await pool.connect();
+  try {
+    const query = 'SELECT * FROM participants WHERE roomCode = $1';
+    const values = [roomCode];
+    const result = await client.query(query, values);
+    return result.rows;
+  } catch (err) {
+    console.error('Erro ao obter a lista de participantes:', err);
+    return [];
+  } finally {
+    client.release();
+  }
+}
+
+// Rota para adicionar um participante
+app.post('/api/participants', async (req, res) => {
+  const participant = req.body;
+  try {
+    const newParticipant = await addParticipant(participant);
+    res.status(201).json(newParticipant);
+  } catch (err) {
+    console.error('Erro ao adicionar o participante:', err);
+    res.status(500).json({ error: 'Erro ao adicionar o participante' });
+  }
+});
+
+// Rota para obter a lista de participantes na sala com o código especificado
+app.get('/api/participants/:roomCode', async (req, res) => {
+  const roomCode = req.params.roomCode;
+  try {
+    const participants = await getParticipantsByRoomCode(roomCode);
+    res.json(participants);
+  } catch (err) {
+    console.error('Erro ao obter a lista de participantes:', err);
+    res.status(500).json({ error: 'Erro ao obter a lista de participantes' });
+  }
+});
+
 async function createRoom({ nome, descricao }) {
   const client = await pool.connect();
   try {
@@ -104,6 +160,45 @@ io.on('connection', (socket) => {
     io.emit('vote', { participant, vote }); // Emitir apenas as propriedades necessárias
   });
 
+  socket.on('disconnect', async () => {
+    console.log('Participante desconectado');
+    // Emitir evento participantLeft com o nome do participante desconectado
+    const disconnectedParticipant = findDisconnectedParticipant(socket.id);
+    if (disconnectedParticipant) {
+      io.emit('participantLeft', disconnectedParticipant.name);
+
+      // Remover o participante da tabela ao desconectar
+      try {
+        const query = 'DELETE FROM participants WHERE id = $1';
+        const values = [disconnectedParticipant.id];
+        await pool.query(query, values);
+      } catch (err) {
+        console.error('Erro ao remover o participante:', err);
+      }
+    }
+  });
+
+  console.log('Novo participante conectado');
+  // Emitir evento participantJoined com os dados do novo participante
+  socket.on('joinRoom', async (participant) => {
+    io.emit('participantJoined', participant);
+
+    // Adicionar o participante à tabela ao conectar
+    try {
+      await addParticipant(participant);
+    } catch (err) {
+      console.error('Erro ao adicionar o participante:', err);
+    }
+  });
+});
+
+/* io.on('connection', (socket) => {
+  socket.on('vote', (data) => {
+    const { participant, vote } = data;
+    console.log(`Participante votou: ${participant} - Voto: ${vote}`);
+    io.emit('vote', { participant, vote }); // Emitir apenas as propriedades necessárias
+  });
+
   socket.on('disconnect', () => {
     console.log('Participante desconectado');
     // Emitir evento participantLeft com o nome do participante desconectado
@@ -118,7 +213,7 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (participant) => {
     io.emit('participantJoined', participant);
   });
-});
+}); */
 
 const port = process.env.PORT || 3000;
 
