@@ -33,12 +33,10 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
-async function createRoom({ nome, descricao }) {
+// Função para criar uma nova sala no banco de dados
+async function createRoom({ nome, descricao, roomCode }) {
   const client = await pool.connect();
   try {
-    // Gerar um código único usando UUID
-    const roomCode = uuidv4();
-
     // Inserir os dados da sala no banco de dados
     const query = 'INSERT INTO salas (nome, descricao, room_code) VALUES ($1, $2, $3) RETURNING *';
     const values = [nome, descricao, roomCode];
@@ -67,6 +65,23 @@ async function getRooms() {
   }
 }
 
+// Função para obter a sala com base no room_code
+async function getRoomByRoomCode(roomCode) {
+  const client = await pool.connect();
+  try {
+    const query = 'SELECT * FROM salas WHERE room_code = $1';
+    const values = [roomCode];
+    const result = await client.query(query, values);
+    return result.rows[0];
+  } catch (err) {
+    console.error('Erro ao obter a sala:', err);
+    return null;
+  } finally {
+    client.release();
+  }
+}
+
+
 // Rota para buscar todas as salas
 app.get('/api/salas', async (req, res) => {
   try {
@@ -78,15 +93,40 @@ app.get('/api/salas', async (req, res) => {
   }
 });
 
-// Rota para criar uma nova sala
+/// Rota para criar uma nova sala
 app.post('/api/salas', async (req, res) => {
   const { nome, descricao } = req.body;
   try {
-    const sala = await createRoom({ nome, descricao });
+    // Gerar um código único usando UUID
+    const roomCode = uuidv4();
+
+    // Atribuir o mesmo valor do UUID tanto para o campo 'nome' quanto para o campo 'room_code'
+    const sala = await createRoom({ nome: roomCode, descricao, roomCode });
+
     res.status(201).json(sala);
   } catch (err) {
     console.error('Erro ao criar a sala:', err);
     res.status(500).json({ error: 'Erro ao criar a sala' });
+  }
+});
+
+// Rota para acessar a sala usando o room_code
+app.get('/room/:roomCode', async (req, res) => {
+  const roomCode = req.params.roomCode;
+  try {
+    // Aqui você pode obter as informações da sala com base no roomCode do banco de dados
+    // e enviar os detalhes da sala como resposta
+    // Exemplo: buscar a sala usando a função getRoomByRoomCode(roomCode)
+    // e enviar os detalhes da sala como resposta
+    const sala = await getRoomByRoomCode(roomCode);
+    if (sala) {
+      res.json(sala);
+    } else {
+      res.status(404).json({ error: 'Sala não encontrada' });
+    }
+  } catch (err) {
+    console.error('Erro ao obter a sala:', err);
+    res.status(500).json({ error: 'Erro ao obter a sala' });
   }
 });
 
