@@ -65,17 +65,18 @@ async function getRooms() {
   }
 }
 
-// Função para obter a sala com base no room_code
-async function getRoomByRoomCode(roomCode) {
+// Função para buscar uma sala pelo código no banco de dados
+async function getRoomByCode(roomCode) {
   const client = await pool.connect();
   try {
     const query = 'SELECT * FROM salas WHERE room_code = $1';
     const values = [roomCode];
     const result = await client.query(query, values);
+
     return result.rows[0];
   } catch (err) {
-    console.error('Erro ao obter a sala:', err);
-    return null;
+    console.error('Erro ao buscar a sala:', err);
+    throw err; // Propagar o erro para o manipulador de rotas
   } finally {
     client.release();
   }
@@ -110,23 +111,19 @@ app.post('/api/salas', async (req, res) => {
   }
 });
 
-// Rota para acessar a sala usando o room_code
-app.get('/room/:roomCode', async (req, res) => {
-  const roomCode = req.params.roomCode;
+// Rota para buscar uma sala pelo código
+app.get('/api/salas/:roomCode', async (req, res) => {
+  const { roomCode } = req.params;
   try {
-    // Aqui você pode obter as informações da sala com base no roomCode do banco de dados
-    // e enviar os detalhes da sala como resposta
-    // Exemplo: buscar a sala usando a função getRoomByRoomCode(roomCode)
-    // e enviar os detalhes da sala como resposta
-    const sala = await getRoomByRoomCode(roomCode);
-    if (sala) {
-      res.json(sala);
-    } else {
-      res.status(404).json({ error: 'Sala não encontrada' });
+    const sala = await getRoomByCode(roomCode);
+    if (!sala) {
+      // Caso a sala não seja encontrada, retornar um erro 404
+      return res.status(404).json({ error: 'Sala não encontrada' });
     }
+    res.json(sala);
   } catch (err) {
-    console.error('Erro ao obter a sala:', err);
-    res.status(500).json({ error: 'Erro ao obter a sala' });
+    console.error('Erro ao buscar a sala:', err);
+    res.status(500).json({ error: 'Erro ao buscar a sala' });
   }
 });
 
