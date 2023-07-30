@@ -33,6 +33,53 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
+// Rota para buscar todas as salas
+app.get('/api/salas', async (req, res) => {
+  try {
+    const salas = await getRooms();
+    res.json(salas);
+  } catch (err) {
+    console.error('Erro ao obter as salas:', err);
+    res.status(500).json({ error: 'Erro ao obter as salas' });
+  }
+});
+
+/// Rota para criar uma nova sala
+app.post('/api/salas', async (req, res) => {
+  const { nome, descricao } = req.body;
+  try {
+    // Gerar um código único usando UUID
+    const roomCode = uuidv4();
+
+    // Atribuir o mesmo valor do UUID tanto para o campo 'nome' quanto para o campo 'room_code'
+    const sala = await createRoom({ nome: roomCode, descricao, roomCode });
+
+    res.status(201).json(sala);
+  } catch (err) {
+    console.error('Erro ao criar a sala:', err);
+    res.status(500).json({ error: 'Erro ao criar a sala' });
+  }
+});
+
+// Rota para buscar uma sala pelo código
+app.get('/api/salas/:roomCode', async (req, res) => {
+  const { roomCode } = req.params;
+  console.log('Código da sala recebido:', roomCode); // Adicione este log para verificar o código recebido
+  try {
+    const sala = await getRoomByCode(roomCode);
+    console.log('Sala encontrada:', sala); // Adicione este log para verificar se a sala foi encontrada
+    if (!sala) {
+      // Caso a sala não seja encontrada, retornar um erro 404
+      return res.status(404).json({ error: 'Sala não encontrada' });
+    }
+    res.json(sala);
+  } catch (err) {
+    console.error('Erro ao buscar a sala:', err);
+    res.status(500).json({ error: 'Erro ao buscar a sala' });
+  }
+});
+
+
 // Função para criar uma nova sala no banco de dados
 async function createRoom({ nome, descricao, roomCode }) {
   const client = await pool.connect();
@@ -82,50 +129,6 @@ async function getRoomByCode(roomCode) {
   }
 }
 
-
-// Rota para buscar todas as salas
-app.get('/api/salas', async (req, res) => {
-  try {
-    const salas = await getRooms();
-    res.json(salas);
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    res.status(500).json({ error: 'Erro ao obter as salas' });
-  }
-});
-
-/// Rota para criar uma nova sala
-app.post('/api/salas', async (req, res) => {
-  const { nome, descricao } = req.body;
-  try {
-    // Gerar um código único usando UUID
-    const roomCode = uuidv4();
-
-    // Atribuir o mesmo valor do UUID tanto para o campo 'nome' quanto para o campo 'room_code'
-    const sala = await createRoom({ nome: roomCode, descricao, roomCode });
-
-    res.status(201).json(sala);
-  } catch (err) {
-    console.error('Erro ao criar a sala:', err);
-    res.status(500).json({ error: 'Erro ao criar a sala' });
-  }
-});
-
-// Rota para buscar uma sala pelo código
-app.get('/api/salas/:roomCode', async (req, res) => {
-  const { roomCode } = req.params;
-  try {
-    const sala = await getRoomByCode(roomCode);
-    if (!sala) {
-      // Caso a sala não seja encontrada, retornar um erro 404
-      return res.status(404).json({ error: 'Sala não encontrada' });
-    }
-    res.json(sala);
-  } catch (err) {
-    console.error('Erro ao buscar a sala:', err);
-    res.status(500).json({ error: 'Erro ao buscar a sala' });
-  }
-});
 
 // Lista de participantes na sala
 const participants = [];
