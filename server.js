@@ -64,7 +64,6 @@ app.post('/api/salas', async (req, res) => {
 // Rota para buscar uma sala pelo código
 app.get('/api/salas/:roomCode', async (req, res) => {
   const { roomCode } = req.params;
-  console.log('Código da sala recebido:', roomCode); // Adicione este log para verificar o código recebido
   try {
     const sala = await getRoomByCode(roomCode);
     console.log('Sala encontrada:', sala); // Adicione este log para verificar se a sala foi encontrada
@@ -78,7 +77,6 @@ app.get('/api/salas/:roomCode', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar a sala' });
   }
 });
-
 
 // Função para criar uma nova sala no banco de dados
 async function createRoom({ nome, descricao, roomCode }) {
