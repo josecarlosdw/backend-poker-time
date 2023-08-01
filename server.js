@@ -83,7 +83,7 @@ async function createRoom({ nome, descricao, roomCode }) {
   const client = await pool.connect();
   try {
     // Inserir os dados da sala no banco de dados
-    const query = 'INSERT INTO salas (nome, descricao, room_code) VALUES ($1, $2, $3) RETURNING *';
+    const query = 'INSERT INTO salas (nome, descricao, roomCode) VALUES ($1, $2, $3) RETURNING *';
     const values = [nome, descricao, roomCode];
     const result = await client.query(query, values);
 
@@ -114,7 +114,7 @@ async function getRooms() {
 async function getRoomByCode(roomCode) {
   const client = await pool.connect();
   try {
-    const query = 'SELECT * FROM salas WHERE room_code = $1';
+    const query = 'SELECT * FROM salas WHERE roomCode = $1';
     const values = [roomCode];
     const result = await client.query(query, values);
 
