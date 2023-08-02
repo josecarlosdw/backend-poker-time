@@ -13,6 +13,18 @@ const io = socketIO(server, {
   },
 });
 
+const admin = require('firebase-admin');
+
+const serviceAccount = require('./firebase-admin-key.json'); // Importe a chave de serviço do Firebase
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://poker-time-6d639-default-rtdb.firebaseio.com' // Substitua pela URL do seu banco de dados do Firebase
+});
+
+const db = admin.firestore(); // Inicialize o Firestore
+
+
 // Use o middleware do cors
 app.use(cors());
 
@@ -34,7 +46,7 @@ app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
 // Rota para buscar todas as salas
-app.get('/api/salas', async (req, res) => {
+/* app.get('/api/salas', async (req, res) => {
   try {
     const salas = await getRooms();
     res.json(salas);
@@ -42,9 +54,21 @@ app.get('/api/salas', async (req, res) => {
     console.error('Erro ao obter as salas:', err);
     res.status(500).json({ error: 'Erro ao obter as salas' });
   }
+}); */
+
+app.get('/api/salas', async (req, res) => {
+  try {
+    const snapshot = await db.collection('salas').get();
+    const salas = snapshot.docs.map((doc) => doc.data());
+
+    res.json(salas);
+  } catch (err) {
+    console.error('Erro ao obter as salas:', err);
+    res.status(500).json({ error: 'Erro ao obter as salas' });
+  }
 });
 
-/// Rota para criar uma nova sala
+/* /// Rota para criar uma nova sala
 app.post('/api/salas', async (req, res) => {
   const { nome, descricao } = req.body;
   try {
@@ -53,6 +77,30 @@ app.post('/api/salas', async (req, res) => {
 
     // Atribuir o mesmo valor do UUID tanto para o campo 'nome' quanto para o campo 'room_code'
     const sala = await createRoom({ nome: roomCode, descricao, roomCode });
+
+    res.status(201).json(sala);
+  } catch (err) {
+    console.error('Erro ao criar a sala:', err);
+    res.status(500).json({ error: 'Erro ao criar a sala' });
+  }
+}); */
+
+app.post('/api/salas', async (req, res) => {
+  const { nome, descricao } = req.body;
+
+  try {
+    // Gerar um código único usando UUID
+    const roomCode = uuidv4();
+
+    // Adicione a sala ao Firebase
+    const salaRef = db.collection('salas').doc(roomCode);
+    await salaRef.set({ nome, descricao });
+
+    const sala = {
+      nome,
+      descricao,
+      roomCode
+    };
 
     res.status(201).json(sala);
   } catch (err) {
