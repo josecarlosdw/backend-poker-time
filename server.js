@@ -110,6 +110,20 @@ async function getRooms() {
   }
 }
 
+// Função para buscar todas as salas no banco de dados
+async function getSalas() {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('SELECT * FROM salas');
+    return result.rows;
+  } catch (err) {
+    console.error('Erro ao obter as salas:', err);
+    return [];
+  } finally {
+    client.release();
+  }
+}
+
 // Função para buscar uma sala pelo código no banco de dados
 async function getRoomByCode(roomCode) {
   const client = await pool.connect();
