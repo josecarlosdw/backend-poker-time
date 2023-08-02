@@ -15,11 +15,11 @@ const io = socketIO(server, {
 
 const admin = require('firebase-admin');
 
-const serviceAccount = require('./firebase-admin-key.json'); // Importe a chave de serviço do Firebase
+const serviceAccount = require('./firebase-admin-key.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://poker-time-6d639-default-rtdb.firebaseio.com' // Substitua pela URL do seu banco de dados do Firebase
+  databaseURL: 'https://poker-time-6d639-default-rtdb.firebaseio.com'
 });
 
 const db = admin.firestore(); // Inicialize o Firestore
@@ -28,33 +28,11 @@ const db = admin.firestore(); // Inicialize o Firestore
 // Use o middleware do cors
 app.use(cors());
 
-const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
-
-// Configurações de conexão fornecidas pelo ElephantSQL
-//postgres://ewtixgnc:Mejvz768-LLtyWABgmzp4lYgzc2TzgSz@silly.db.elephantsql.com/ewtixgnc
-const pool = new Pool({
-  user: 'ewtixgnc',
-  host: 'silly.db.elephantsql.com',
-  database: 'ewtixgnc',
-  password: 'Mejvz768-LLtyWABgmzp4lYgzc2TzgSz',
-  port: 5432, // A porta padrão do PostgreSQL é 5432
-});
 
 // Adicionar o middleware para analisar o corpo da solicitação como JSON
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
-
-// Rota para buscar todas as salas
-/* app.get('/api/salas', async (req, res) => {
-  try {
-    const salas = await getRooms();
-    res.json(salas);
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    res.status(500).json({ error: 'Erro ao obter as salas' });
-  }
-}); */
 
 app.get('/api/salas', async (req, res) => {
   try {
@@ -67,23 +45,6 @@ app.get('/api/salas', async (req, res) => {
     res.status(500).json({ error: 'Erro ao obter as salas' });
   }
 });
-
-/* /// Rota para criar uma nova sala
-app.post('/api/salas', async (req, res) => {
-  const { nome, descricao } = req.body;
-  try {
-    // Gerar um código único usando UUID
-    const roomCode = uuidv4();
-
-    // Atribuir o mesmo valor do UUID tanto para o campo 'nome' quanto para o campo 'room_code'
-    const sala = await createRoom({ nome: roomCode, descricao, roomCode });
-
-    res.status(201).json(sala);
-  } catch (err) {
-    console.error('Erro ao criar a sala:', err);
-    res.status(500).json({ error: 'Erro ao criar a sala' });
-  }
-}); */
 
 app.post('/api/salas', async (req, res) => {
   const { nome, descricao } = req.body;
@@ -113,82 +74,19 @@ app.post('/api/salas', async (req, res) => {
 app.get('/api/salas/:roomCode', async (req, res) => {
   const { roomCode } = req.params;
   try {
-    const sala = await getRoomByCode(roomCode);
-    console.log('Sala encontrada:', sala); // Adicione este log para verificar se a sala foi encontrada
-    if (!sala) {
+    const salaRef = await db.collection('salas').doc(roomCode).get();
+    if (!salaRef.exists) {
       // Caso a sala não seja encontrada, retornar um erro 404
       return res.status(404).json({ error: 'Sala não encontrada' });
     }
+    const sala = salaRef.data();
+
     res.json(sala);
   } catch (err) {
     console.error('Erro ao buscar a sala:', err);
     res.status(500).json({ error: 'Erro ao buscar a sala' });
   }
 });
-
-// Função para criar uma nova sala no banco de dados
-async function createRoom({ nome, descricao, roomCode }) {
-  const client = await pool.connect();
-  try {
-    // Inserir os dados da sala no banco de dados
-    const query = 'INSERT INTO salas (nome, descricao, room_code) VALUES ($1, $2, $3) RETURNING *';
-    const values = [nome, descricao, roomCode];
-    const result = await client.query(query, values);
-
-    return result.rows[0];
-  } catch (err) {
-    console.error('Erro ao criar a sala:', err);
-    throw err; // Propagar o erro para o manipulador de rotas
-  } finally {
-    client.release();
-  }
-}
-
-// Exemplo de consulta ao banco de dados
-async function getRooms() {
-  const client = await pool.connect();
-  try {
-    const result = await client.query('SELECT * FROM salas');
-    return result.rows;
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    return [];
-  } finally {
-    client.release();
-  }
-}
-
-// Função para buscar todas as salas no banco de dados
-async function getSalas() {
-  const client = await pool.connect();
-  try {
-    const result = await client.query('SELECT * FROM salas');
-    return result.rows;
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    return [];
-  } finally {
-    client.release();
-  }
-}
-
-// Função para buscar uma sala pelo código no banco de dados
-async function getRoomByCode(roomCode) {
-  const client = await pool.connect();
-  try {
-    const query = 'SELECT * FROM salas WHERE room_code = $1';
-    const values = [roomCode];
-    const result = await client.query(query, values);
-
-    return result.rows[0];
-  } catch (err) {
-    console.error('Erro ao buscar a sala:', err);
-    throw err; // Propagar o erro para o manipulador de rotas
-  } finally {
-    client.release();
-  }
-}
-
 
 // Lista de participantes na sala
 const participants = [];
