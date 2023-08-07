@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,22 +14,41 @@ const io = socketIO(server, {
   },
 });
 
-const admin = require('firebase-admin');
-
-const serviceAccount = require('./firebase-admin-key.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://poker-time-6d639-default-rtdb.firebaseio.com'
-});
-
-const db = admin.firestore(); // Inicialize o Firestore
-
 
 // Use o middleware do cors
 app.use(cors());
 
-const { v4: uuidv4 } = require('uuid');
+// Objeto para armazenar temporariamente os detalhes da sala
+const rooms = {};
+
+// Objeto para armazenar temporariamente os detalhes da sala
+const temporaryRooms = {};
+
+// Rota para criar uma nova sala temporária
+app.post('/api/criarSalaTemporaria', (req, res) => {
+  const roomCode = uuidv4(); // Gerar um código único usando UUIDv4
+  const sala = {
+    nome: 'Nova Sala',
+    descricao: 'Descrição da nova sala',
+    participantes: [],
+  };
+
+  rooms[roomCode] = sala; // Armazena os detalhes da sala no objeto rooms
+
+  res.status(201).json(sala); // Retorna os detalhes da sala como resposta JSON
+});
+
+// Rota para obter os detalhes da sala com base no código da sala
+app.get('/api/sala/:roomCode', (req, res) => {
+  const { roomCode } = req.params;
+  const sala = rooms[roomCode];
+
+  if (sala) {
+    res.json(sala); // Retorna os detalhes da sala como resposta JSON
+  } else {
+    res.status(404).json({ error: 'Sala não encontrada' }); // Retorna erro 404 se a sala não existir
+  }
+});
 
 // Adicionar o middleware para analisar o corpo da solicitação como JSON
 app.use(express.json());
@@ -86,7 +106,7 @@ app.get('/api/salas/:roomCode', async (req, res) => {
     console.error('Erro ao buscar a sala:', err);
     res.status(500).json({ error: 'Erro ao buscar a sala' });
   }
-});
+}); 
 
 // Lista de participantes na sala
 const participants = [];
