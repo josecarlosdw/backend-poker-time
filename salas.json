@@ -1,0 +1,21 @@
+[
+    {
+      "id": 1,
+      "nome": "Sala de Planejamento",
+      "descricao": "Reunião para planejamento do projeto",
+      "room_code": "5398b4a0-8642-47ce-a045-09c1cf85b0f1"
+    },
+    {
+      "id": 2,
+      "nome": "Sala de Discussão",
+      "descricao": "Discussão de ideias e conceitos",
+      "room_code": "c8b7b321-8d5e-4a6a-9f3a-31f16a9e6cd5"
+    },
+    {
+      "id": 3,
+      "nome": "Sala de Treinamento",
+      "descricao": "Treinamento para novos colaboradores",
+      "room_code": "3e5b6cd2-2c8a-4b21-83c9-79fb2f8c01a6"
+    }
+  ]
+  

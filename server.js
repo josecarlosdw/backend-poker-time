@@ -17,6 +17,8 @@ const io = socketIO(server, {
 
 // Use o middleware do cors
 app.use(cors());
+app.use(express.json());
+app.use(express.static('dist/planning-poker-app'));
 
 // Objeto para armazenar temporariamente os detalhes da sala
 const rooms = {};
@@ -24,24 +26,51 @@ const rooms = {};
 // Objeto para armazenar temporariamente os detalhes da sala
 const temporaryRooms = {};
 
+// Caminho para o arquivo JSON que irá armazenar as salas
+const salasFilePath = './salas.json';
+
+// Função para ler o arquivo JSON e retornar os dados das salas
+function readSalasFile() {
+  try {
+    const data = fs.readFileSync(salasFilePath, 'utf-8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.error('Erro ao ler o arquivo de salas:', err);
+    return [];
+  }
+}
+
+// Função para gravar os dados das salas no arquivo JSON
+function writeSalasFile(salas) {
+  try {
+    fs.writeFileSync(salasFilePath, JSON.stringify(salas, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('Erro ao gravar o arquivo de salas:', err);
+  }
+}
+
 // Rota para criar uma nova sala temporária
 app.post('/api/criarSalaTemporaria', (req, res) => {
   const roomCode = uuidv4(); // Gerar um código único usando UUIDv4
-  const sala = {
+  const novaSala = {
+    id: 0,
     nome: 'Nova Sala',
     descricao: 'Descrição da nova sala',
-    participantes: [],
+    room_code: roomCode,
   };
 
-  rooms[roomCode] = sala; // Armazena os detalhes da sala no objeto rooms
+  const salas = readSalasFile();
+  salas.push(novaSala);
+  writeSalasFile(salas);
 
-  res.status(201).json(sala); // Retorna os detalhes da sala como resposta JSON
+  res.status(201).json(novaSala); // Retorna os detalhes da sala como resposta JSON
 });
 
 // Rota para obter os detalhes da sala com base no código da sala
 app.get('/api/sala/:roomCode', (req, res) => {
   const { roomCode } = req.params;
-  const sala = rooms[roomCode];
+  const salas = readSalasFile();
+  const sala = salas.find(s => s.room_code === roomCode);
 
   if (sala) {
     res.json(sala); // Retorna os detalhes da sala como resposta JSON
@@ -49,10 +78,6 @@ app.get('/api/sala/:roomCode', (req, res) => {
     res.status(404).json({ error: 'Sala não encontrada' }); // Retorna erro 404 se a sala não existir
   }
 });
-
-// Adicionar o middleware para analisar o corpo da solicitação como JSON
-app.use(express.json());
-app.use(express.static('dist/planning-poker-app'));
 
 /* app.get('/api/salas', async (req, res) => {
   try {
