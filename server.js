@@ -141,6 +141,13 @@ function findDisconnectedParticipant(socketId) {
   
 
 io.on('connection', (socket) => {
+
+  console.log('Novo participante conectado');
+
+  socket.on('joinRoom', (participant) => {
+    io.emit('participantJoined', participant); // Emitindo o evento para todos os clientes
+  });
+
   socket.on('vote', (data) => {
     const { participant, vote } = data;
     console.log(`Participante votou: ${participant} - Voto: ${vote}`);
