@@ -3,6 +3,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -27,8 +28,8 @@ const salasFilePath = './salas.json';
 function readSalasFile() {
   try {
     const data = fs.readFileSync(salasFilePath, 'utf-8');
-    console.log('data readfile', data)
-    console.log('data salasFilePath em readfile ', salasFilePath)
+    console.log('data readfile', data); // Log para verificar o conteúdo lido
+    console.log('data salasFilePath em readfile ', salasFilePath); // Log para verificar o caminho do arquivo
     return JSON.parse(data);
   } catch (err) {
     console.error('Erro ao ler o arquivo de salas:', err);
@@ -40,8 +41,8 @@ function readSalasFile() {
 function writeSalasFile(salas) {
   try {
     fs.writeFileSync(salasFilePath, JSON.stringify(salas, null, 2), 'utf-8');
-    console.log('data writeFileSync', data)
-    console.log('data salasFilePath em writeSalasFile ', salasFilePath)
+    console.log('data writeFileSync', data); // Log para verificar o conteúdo gravado
+    console.log('data salasFilePath em writeSalasFile ', salasFilePath); // Log para verificar o caminho do arquivo
   } catch (err) {
     console.error('Erro ao gravar o arquivo de salas:', err);
   }
