@@ -20,12 +20,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
-// Objeto para armazenar temporariamente os detalhes da sala
-const rooms = {};
-
-// Objeto para armazenar temporariamente os detalhes da sala
-const temporaryRooms = {};
-
 // Caminho para o arquivo JSON que irá armazenar as salas
 const salasFilePath = './salas.json';
 
@@ -33,6 +27,8 @@ const salasFilePath = './salas.json';
 function readSalasFile() {
   try {
     const data = fs.readFileSync(salasFilePath, 'utf-8');
+    console.log('data readfile', data)
+    console.log('data salasFilePath em readfile ', salasFilePath)
     return JSON.parse(data);
   } catch (err) {
     console.error('Erro ao ler o arquivo de salas:', err);
@@ -44,6 +40,8 @@ function readSalasFile() {
 function writeSalasFile(salas) {
   try {
     fs.writeFileSync(salasFilePath, JSON.stringify(salas, null, 2), 'utf-8');
+    console.log('data writeFileSync', data)
+    console.log('data salasFilePath em writeSalasFile ', salasFilePath)
   } catch (err) {
     console.error('Erro ao gravar o arquivo de salas:', err);
   }
