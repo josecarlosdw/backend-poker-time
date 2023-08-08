@@ -141,21 +141,14 @@ function findDisconnectedParticipant(socketId) {
   
 
 io.on('connection', (socket) => {
-  socket.on('joinRoom', (participant) => {
-    participants.push(participant); // Adicione o novo participante à lista global
-    io.emit('allParticipants', participants); // Emita a lista de participantes para todos os participantes
-  });
-
-
   socket.on('vote', (data) => {
     const { participant, vote } = data;
     console.log(`Participante votou: ${participant} - Voto: ${vote}`);
-    io.emit('vote', { participant, vote }); // Emitir apenas as propriedades necessárias
+    io.emit('vote', { participant, vote });
   });
 
   socket.on('disconnect', () => {
     console.log('Participante desconectado');
-    // Emitir evento participantLeft com o nome do participante desconectado
     const disconnectedParticipant = findDisconnectedParticipant(socket.id);
     if (disconnectedParticipant) {
       io.emit('participantLeft', disconnectedParticipant.name);
@@ -163,9 +156,14 @@ io.on('connection', (socket) => {
   });
 
   console.log('Novo participante conectado');
-  // Emitir evento participantJoined com os dados do novo participante
   socket.on('joinRoom', (participant) => {
-    io.emit('participantJoined', participant);
+    participants.push(participant); // Adicionar o novo participante à lista de participantes
+
+    // Emitir a lista de todos os participantes para o novo participante
+    io.to(socket.id).emit('allParticipants', participants);
+
+    // Emitir evento participantJoined para todos os outros participantes
+    socket.broadcast.emit('participantJoined', participant);
   });
 });
 
