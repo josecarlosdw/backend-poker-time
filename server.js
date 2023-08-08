@@ -54,7 +54,7 @@ app.get('/api/sala/:roomCode', (req, res) => {
 app.use(express.json());
 app.use(express.static('dist/planning-poker-app'));
 
-app.get('/api/salas', async (req, res) => {
+/* app.get('/api/salas', async (req, res) => {
   try {
     const snapshot = await db.collection('salas').get();
     const salas = snapshot.docs.map((doc) => doc.data());
@@ -106,7 +106,7 @@ app.get('/api/salas/:roomCode', async (req, res) => {
     console.error('Erro ao buscar a sala:', err);
     res.status(500).json({ error: 'Erro ao buscar a sala' });
   }
-}); 
+});  */
 
 // Lista de participantes na sala
 const participants = [];
