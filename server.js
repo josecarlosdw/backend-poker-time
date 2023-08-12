@@ -78,60 +78,6 @@ app.get('/api/sala/:roomCode', (req, res) => {
   }
 });
 
-/* app.get('/api/salas', async (req, res) => {
-  try {
-    const snapshot = await db.collection('salas').get();
-    const salas = snapshot.docs.map((doc) => doc.data());
-
-    res.json(salas);
-  } catch (err) {
-    console.error('Erro ao obter as salas:', err);
-    res.status(500).json({ error: 'Erro ao obter as salas' });
-  }
-});
-
-app.post('/api/salas', async (req, res) => {
-  const { nome, descricao } = req.body;
-
-  try {
-    // Gerar um código único usando UUID
-    const roomCode = uuidv4();
-
-    // Adicione a sala ao Firebase
-    const salaRef = db.collection('salas').doc(roomCode);
-    await salaRef.set({ nome, descricao });
-
-    const sala = {
-      nome,
-      descricao,
-      roomCode
-    };
-
-    res.status(201).json(sala);
-  } catch (err) {
-    console.error('Erro ao criar a sala:', err);
-    res.status(500).json({ error: 'Erro ao criar a sala' });
-  }
-});
-
-// Rota para buscar uma sala pelo código
-app.get('/api/salas/:roomCode', async (req, res) => {
-  const { roomCode } = req.params;
-  try {
-    const salaRef = await db.collection('salas').doc(roomCode).get();
-    if (!salaRef.exists) {
-      // Caso a sala não seja encontrada, retornar um erro 404
-      return res.status(404).json({ error: 'Sala não encontrada' });
-    }
-    const sala = salaRef.data();
-
-    res.json(sala);
-  } catch (err) {
-    console.error('Erro ao buscar a sala:', err);
-    res.status(500).json({ error: 'Erro ao buscar a sala' });
-  }
-});  */
-
 // Lista de participantes na sala
 const participants = [];
 
@@ -141,11 +87,16 @@ function findDisconnectedParticipant(socketId) {
   
 
 io.on('connection', (socket) => {
-
   console.log('Novo participante conectado');
 
   socket.on('joinRoom', (participant) => {
-    io.emit('participantJoined', participant); // Emitindo o evento para todos os clientes
+    participants.push(participant); // Adicionar o novo participante à lista de participantes
+
+    // Emitir a lista de todos os participantes para o novo participante
+    io.to(socket.id).emit('allParticipants', participants);
+
+    // Emitir evento participantJoined para todos os outros participantes
+    socket.broadcast.emit('participantJoined', participant);
   });
 
   socket.on('vote', (data) => {
@@ -158,19 +109,14 @@ io.on('connection', (socket) => {
     console.log('Participante desconectado');
     const disconnectedParticipant = findDisconnectedParticipant(socket.id);
     if (disconnectedParticipant) {
+      // Remover o participante desconectado da lista de participantes
+      participants.splice(participants.indexOf(disconnectedParticipant), 1);
+      
+      // Emitir a lista atualizada de participantes para todos os outros participantes
+      socket.broadcast.emit('allParticipants', participants);
+
       io.emit('participantLeft', disconnectedParticipant.name);
     }
-  });
-
-  console.log('Novo participante conectado');
-  socket.on('joinRoom', (participant) => {
-    participants.push(participant); // Adicionar o novo participante à lista de participantes
-
-    // Emitir a lista de todos os participantes para o novo participante
-    io.to(socket.id).emit('allParticipants', participants);
-
-    // Emitir evento participantJoined para todos os outros participantes
-    socket.broadcast.emit('participantJoined', participant);
   });
 });
 
