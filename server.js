@@ -8,7 +8,7 @@ const fs = require('fs');
 const app = express();
 const server = http.createServer(app);
 
-const io = new Server(server, {
+const io = socketIO(server, {
   cors: {
     credentials: true,
     origin: '*',
