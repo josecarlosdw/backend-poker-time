@@ -8,7 +8,7 @@ const fs = require('fs');
 const app = express();
 const server = http.createServer(app);
 
-const io = socketIO(server, {
+const io = new Server(server, {
   cors: {
     credentials: true,
     origin: '*',
@@ -27,7 +27,7 @@ const salasFilePath = './salas.json';
 // Função para ler o arquivo JSON e retornar os dados das salas
 function readSalasFile() {
   try {
-    const data = fs.readFileSync(salasFilePath, 'utf-8');
+    const data = fs.readFile(salasFilePath, 'utf-8');
     console.log('data readfile', data); // Log para verificar o conteúdo lido
     console.log('data salasFilePath em readfile ', salasFilePath); // Log para verificar o caminho do arquivo
     return JSON.parse(data);
@@ -40,7 +40,7 @@ function readSalasFile() {
 // Função para gravar os dados das salas no arquivo JSON
 function writeSalasFile(salas) {
   try {
-    fs.writeFileSync(salasFilePath, JSON.stringify(salas, null, 2), 'utf-8');
+    fs.writeFile(salasFilePath, JSON.stringify(salas, null, 2), 'utf-8');
     console.log('data writeFileSync', data); // Log para verificar o conteúdo gravado
     console.log('data salasFilePath em writeSalasFile ', salasFilePath); // Log para verificar o caminho do arquivo
   } catch (err) {
