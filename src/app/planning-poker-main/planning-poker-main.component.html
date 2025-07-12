@@ -1,0 +1,53 @@
+<div class="container">
+
+  <h2>Planning Poker Main</h2>
+    <p>Username: {{ username }}</p>
+ 
+    <h2>Selecione um card: {{ selectedCard }}</h2>
+   
+    <!-- Componente para selecionar o card -->
+    <button (click)="selectCard('1')">1</button>
+    <button (click)="selectCard('2')">2</button>
+    <button (click)="selectCard('3')">3</button>
+    <!-- Restante do template -->
+
+    <app-room-list [selectedCard]="selectedCard"></app-room-list>
+
+    <button (click)="sendCard()">Enviar card</button>
+    <!-- <app-chat [selectedCard]="selectedCard" [username]="username"></app-chat>
+    <p></p>
+    <div class="card-list">
+      <div
+        *ngFor="let card of cards"
+        [class.selected]="isCardSelected(card)"
+        (click)="selectCard(card)"
+      >
+        {{ card }}
+      </div>
+    </div>
+
+    <button (click)="resetCards()">Resetar</button>
+
+    <button (click)="selectCard('1')">1</button>
+<button (click)="selectCard('2')">2</button>
+<button (click)="selectCard('3')">3</button> -->
+  </div>
+
+  
+<!-- <h1>Planning Poker</h1>
+
+<div class="cards">
+  <mat-card *ngFor="let card of cards">
+    <mat-card-header>
+      <mat-card-title>{{ card.text }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-body>
+      <mat-button (click)="card.selected = !card.selected">
+        <mat-icon>{{ card.icon }}</mat-icon>
+      </mat-button>
+    </mat-card-body>
+    <mat-card-footer>
+      <mat-button type="submit">Submit</mat-button>
+    </mat-card-footer>
+  </mat-card>
+</div> -->

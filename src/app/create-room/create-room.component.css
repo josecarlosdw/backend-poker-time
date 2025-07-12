@@ -1,0 +1,16 @@
+.container {
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 5px;
+  }
+  
+  .button-group {
+    margin-top: 20px;
+  }

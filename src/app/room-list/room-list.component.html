@@ -1,0 +1,20 @@
+<div class="container">  
+
+  <app-chat></app-chat>
+
+    <h2>Salas criadas</h2>
+
+    <p>Username: {{ username }}</p>
+    <p>card selecionado: {{ selectedCard }}</p>
+
+    <div *ngFor="let user of users">
+      <p>{{ user.username }} - {{ user.selectedCard }}</p>
+    </div>
+    <button (click)="calculateAverage()">Calculate Average</button>
+    <p>Average: {{ average }}</p>
+
+    <app-chat></app-chat>  
+
+
+  </div>
+  

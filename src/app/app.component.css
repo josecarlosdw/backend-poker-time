@@ -1,0 +1,14 @@
+header, nav, aside, main, footer {
+    margin: 0.5em; 
+    border: thin solid; 
+    padding: 0.5em;
+    color: black;;
+  }
+  header {
+    background-color: rgb(13, 13, 100);
+
+  }
+  h1, h2, p { margin: 0; color: rgb(255, 255, 255); }
+ 
+  aside { float: right; }
+  footer { clear: both; }

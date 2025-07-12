@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -11,14 +11,21 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",
+    "@angular/cdk": "~16.0.1",
     "@angular/common": "~12.2.0",
     "@angular/compiler": "~12.2.0",
     "@angular/core": "~12.2.0",
     "@angular/forms": "~12.2.0",
+    "@angular/material": "~16.0.1",
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
+    "cjs": "^0.0.11",
+    "express": "^4.18.2",
+    "mongoose": "^7.2.3",
     "rxjs": "~6.6.0",
+    "socket.io": "^4.6.2",
+    "socket.io-client": "^4.6.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

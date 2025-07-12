@@ -1,0 +1,16 @@
+.container {
+    text-align: center;
+  }
+  
+  .chat-messages {
+    margin-bottom: 20px;
+  }
+  
+  .message {
+    margin-bottom: 10px;
+  }
+  
+  .button-group {
+    margin-top: 10px;
+  }
+  

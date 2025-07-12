@@ -1,0 +1,27 @@
+.form {
+    margin: 10px;
+  }
+  
+  .mat-card {
+    margin: 10px;
+  }
+  
+  .mat-card-header {
+    border-bottom: 1px solid lightgray;
+  }
+  
+  .mat-card-title {
+    font-size: 16px;
+  }
+  
+  .mat-card-body {
+    padding: 10px;
+  }
+  
+  .submit-button {
+    margin-top: 10px;
+  }
+  
+  .mat-button {
+    width: 50px;
+  }

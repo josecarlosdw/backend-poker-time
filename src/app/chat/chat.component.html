@@ -1,0 +1,9 @@
+
+
+<div class="container">
+  <h2>Chat</h2>
+  <div *ngFor="let message of messages">
+    <p>{{ message.sender }}: {{ message.content }}</p>
+    <p>Selected Card: {{ message.selectedCard }}</p>
+  </div>
+</div>

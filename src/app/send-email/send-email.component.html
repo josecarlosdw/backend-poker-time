@@ -1,0 +1,39 @@
+<h1>Send Email</h1>
+
+<div class="form">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Name</mat-card-title>
+    </mat-card-header>
+    <mat-card-body>
+      <input [(ngModel)]="name" type="text" placeholder="Enter name">
+    </mat-card-body>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Position</mat-card-title>
+    </mat-card-header>
+    <mat-card-body>
+      <mat-select [(ngModel)]="position">
+        <mat-option *ngFor="let position of positions" [value]="position">
+          {{ position }}
+        </mat-option>
+      </mat-select>
+    </mat-card-body>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Email</mat-card-title>
+    </mat-card-header>
+    <mat-card-body>
+      <input [(ngModel)]="email" type="email" placeholder="Enter email">
+    </mat-card-body>
+  </mat-card>
+
+  <div class="submit-button">
+    <mat-button type="submit">Send</mat-button>
+    <mat-button type="button">Cancel</mat-button>
+  </div>
+</div>
