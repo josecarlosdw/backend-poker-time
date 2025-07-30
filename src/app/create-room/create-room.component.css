@@ -1,0 +1,81 @@
+.create-room-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+}
+
+.create-room-card {
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.create-button {
+  min-width: 150px;
+  height: 48px;
+  font-size: 1.1rem;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.invited-users-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.invited-user-chip {
+  display: flex;
+  align-items: center;
+  background: #e0e0e0;
+  border-radius: 16px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.invited-user-chip button {
+  margin-left: 0.5rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+}
+
+mat-list-item {
+  cursor: pointer;
+}
+mat-list-item:hover {
+  background: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+  .create-room-container {
+    padding: 1rem;
+  }
+  
+  .create-room-card {
+    padding: 1.5rem;
+  }
+}

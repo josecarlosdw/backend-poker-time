@@ -1,0 +1,37 @@
+<div class="chat-container">
+  <mat-card class="chat-card">
+    <mat-card-header>
+      <mat-card-title>Chat</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="messages-container">
+        <div *ngFor="let message of messages" class="message">
+          <div class="message-header">
+            <span class="username">{{ message.username }}</span>
+            <span class="timestamp">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+          <div class="message-content">{{ message.message }}</div>
+        </div>
+      </div>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="message-form">
+        <mat-form-field appearance="outline" class="message-input">
+          <mat-label>Digite sua mensagem</mat-label>
+          <input matInput formControlName="message" placeholder="Digite sua mensagem...">
+        </mat-form-field>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          [disabled]="chatForm.invalid"
+          class="send-button"
+        >
+          Enviar
+        </button>
+      </form>
+    </mat-card-actions>
+  </mat-card>
+</div>

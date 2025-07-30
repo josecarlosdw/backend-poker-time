@@ -1,0 +1,45 @@
+.session-history-container {
+  padding: 20px;
+}
+
+.session-history-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.mat-column-actions {
+  width: 120px;
+  text-align: center;
+}
+
+.mat-column-date {
+  width: 150px;
+}
+
+.mat-column-participants {
+  width: 100px;
+  text-align: center;
+}
+
+.mat-column-average {
+  width: 100px;
+  text-align: center;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+} 

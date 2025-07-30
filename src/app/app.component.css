@@ -1,0 +1,362 @@
+/* App Container */
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Toolbar */
+.app-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #0052cc 0%, #0065ff 100%);
+  color: white;
+}
+
+.sidebar-toggle {
+  margin-right: 16px;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.app-title:hover {
+  opacity: 0.8;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+/* Search Bar */
+.search-container {
+  margin-right: 16px;
+}
+
+.search-field {
+  width: 300px;
+}
+
+.search-field ::ng-deep .mat-form-field-outline {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.search-field ::ng-deep .mat-form-field-outline-thick {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-field ::ng-deep .mat-form-field-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-field ::ng-deep input {
+  color: white;
+}
+
+.search-field ::ng-deep input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Notification Button */
+.notification-btn {
+  margin-right: 8px;
+}
+
+/* User Menu */
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+
+.user-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Notification Menu */
+.notification-header {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.notification-header h3 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 1rem;
+}
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.notification-item:hover {
+  background: #f8f9fa;
+}
+
+.notification-item mat-icon {
+  color: #0052cc;
+  font-size: 20px;
+}
+
+/* Sidenav Container */
+.sidenav-container {
+  flex: 1;
+  margin-top: 64px;
+}
+
+/* Sidebar */
+.app-sidenav {
+  width: 280px;
+  background: #f4f5f7;
+  border-right: 1px solid #dfe1e6;
+  transition: width 0.3s ease;
+}
+
+.sidenav-collapsed {
+  width: 64px;
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #dfe1e6;
+  background: #fafbfc;
+}
+
+.sidenav-header h3 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collapse-btn {
+  color: #6b778c;
+}
+
+.collapse-btn mat-icon {
+  font-family: 'Material Icons' !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Sidebar Navigation List */
+.sidenav-list {
+  padding: 8px 0;
+}
+
+.nav-item {
+  margin: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-item:hover {
+  background: #e8f0fe;
+  color: #0052cc;
+}
+
+.nav-item.active {
+  background: #0052cc;
+  color: white;
+}
+
+.nav-item.active mat-icon {
+  color: white;
+  font-family: 'Material Icons' !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.nav-item mat-icon {
+  color: #6b778c;
+  margin-right: 12px;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Icons' !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure Material Icons are visible */
+.mat-icon {
+  font-family: 'Material Icons' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Specific fix for list item icons */
+.mat-mdc-list-item-icon {
+  font-family: 'Material Icons' !important;
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure icons are visible in all Material contexts */
+.mat-mdc-button .mat-icon,
+.mat-mdc-raised-button .mat-icon,
+.mat-mdc-stroked-button .mat-icon,
+.mat-mdc-flat-button .mat-icon {
+  font-family: 'Material Icons' !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Specific fix for dashboard icon and other problematic icons */
+.mat-icon:contains('dashboard'),
+.mat-icon:contains('meeting_room'),
+.mat-icon:contains('add_circle'),
+.mat-icon:contains('history'),
+.mat-icon:contains('analytics'),
+.mat-icon:contains('settings'),
+.mat-icon:contains('help') {
+  font-family: 'Material Icons' !important;
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Force display for all Material Icons */
+.mat-icon {
+  font-family: 'Material Icons' !important;
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: inherit !important;
+}
+
+/* Specific fix for navigation icons */
+.nav-item .mat-icon {
+  font-family: 'Material Icons' !important;
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 12px !important;
+  color: #6b778c !important;
+}
+
+.nav-item.active .mat-icon {
+  color: white !important;
+}
+
+/* Main Content */
+.app-content {
+  background: #fafbfc;
+  padding: 0;
+}
+
+.content-wrapper {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .search-field {
+    width: 200px;
+  }
+  
+  .app-sidenav {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-toolbar {
+    padding: 0 8px;
+  }
+  
+  .search-container {
+    display: none;
+  }
+  
+  .app-title {
+    font-size: 1.1rem;
+  }
+  
+  .app-sidenav {
+    width: 100%;
+    position: fixed;
+    z-index: 999;
+  }
+  
+  .content-wrapper {
+    padding: 16px;
+  }
+  
+  .user-menu-btn span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 12px;
+  }
+  
+  .app-title mat-icon {
+    display: none;
+  }
+}

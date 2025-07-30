@@ -1,0 +1,74 @@
+<div class="create-room-container">
+  <mat-card class="create-room-card">
+    <mat-card-header>
+      <mat-card-title>Criar Nova Sala</mat-card-title>
+      <mat-card-subtitle>Configure os detalhes da sua sala de Planning Poker</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="createRoomForm" (ngSubmit)="onSubmit()" class="form-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome da Sala</mat-label>
+          <input matInput formControlName="name" placeholder="Digite o nome da sala">
+          <mat-error *ngIf="createRoomForm.get('name')?.hasError('required')">
+            Nome da sala é obrigatório
+          </mat-error>
+          <mat-error *ngIf="createRoomForm.get('name')?.hasError('minlength')">
+            Nome deve ter pelo menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição (opcional)</mat-label>
+          <textarea matInput formControlName="description" placeholder="Descreva o propósito da sala"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tarefa Relacionada (Consultmappr)</mat-label>
+          <input matInput type="text" placeholder="Buscar tarefa por nome ou ID" (input)="onTaskSearch($event)" [value]="selectedTask?.title || ''">
+          <mat-list *ngIf="filteredTasks.length && !selectedTask">
+            <mat-list-item *ngFor="let task of filteredTasks" (click)="selectTask(task)">
+              <span>{{ task.id }} - {{ task.title }} <span style="color: #888; font-size: 0.9em;">[{{ task.status }}]</span></span>
+            </mat-list-item>
+          </mat-list>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tarefa Relacionada (opcional)</mat-label>
+          <input matInput formControlName="relatedTask" placeholder="ID ou nome da tarefa">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Convidar Usuários</mat-label>
+          <input matInput type="text" placeholder="Digite nome ou email" (input)="onUserSearch($event)">
+          <mat-list *ngIf="(userSearchResults$ | async)?.length">
+            <mat-list-item *ngFor="let user of userSearchResults$ | async" (click)="addUserToInvite(user)">
+              {{ user.username }} ({{ user.email }})
+            </mat-list-item>
+          </mat-list>
+        </mat-form-field>
+
+        <div *ngIf="invitedUsers.length > 0" class="invited-users-list">
+          <span *ngFor="let user of invitedUsers" class="invited-user-chip">
+            {{ user.username }} ({{ user.email }})
+            <button mat-icon-button color="warn" (click)="removeUserFromInvite(user)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+        </div>
+
+        <div class="button-container">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="createRoomForm.invalid || loading"
+            class="create-button"
+          >
+            {{ loading ? 'Criando...' : 'Criar Sala' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
