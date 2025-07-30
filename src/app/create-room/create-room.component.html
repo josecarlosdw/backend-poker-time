@@ -1,101 +1,74 @@
-<div class="container">
+<div class="create-room-container">
+  <mat-card class="create-room-card">
+    <mat-card-header>
+      <mat-card-title>Criar Nova Sala</mat-card-title>
+      <mat-card-subtitle>Configure os detalhes da sua sala de Planning Poker</mat-card-subtitle>
+    </mat-card-header>
 
-  <h2>Create Room</h2>
-  <label for="username">Username:</label>
-  <input type="text" id="username" [(ngModel)]="username">
+    <mat-card-content>
+      <form [formGroup]="createRoomForm" (ngSubmit)="onSubmit()" class="form-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome da Sala</mat-label>
+          <input matInput formControlName="name" placeholder="Digite o nome da sala">
+          <mat-error *ngIf="createRoomForm.get('name')?.hasError('required')">
+            Nome da sala é obrigatório
+          </mat-error>
+          <mat-error *ngIf="createRoomForm.get('name')?.hasError('minlength')">
+            Nome deve ter pelo menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
 
-  <label for="roomName">Room Name:</label>
-  <input type="text" id="roomName" [(ngModel)]="roomName">
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição (opcional)</mat-label>
+          <textarea matInput formControlName="description" placeholder="Descreva o propósito da sala"></textarea>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>Tarefa Relacionada (Consultmappr)</mat-label>
+          <input matInput type="text" placeholder="Buscar tarefa por nome ou ID" (input)="onTaskSearch($event)" [value]="selectedTask?.title || ''">
+          <mat-list *ngIf="filteredTasks.length && !selectedTask">
+            <mat-list-item *ngFor="let task of filteredTasks" (click)="selectTask(task)">
+              <span>{{ task.id }} - {{ task.title }} <span style="color: #888; font-size: 0.9em;">[{{ task.status }}]</span></span>
+            </mat-list-item>
+          </mat-list>
+        </mat-form-field>
 
-<!--  <h2>Create Room</h2>
- <input [(ngModel)]="username" placeholder="Username" />
+        <mat-form-field appearance="outline">
+          <mat-label>Tarefa Relacionada (opcional)</mat-label>
+          <input matInput formControlName="relatedTask" placeholder="ID ou nome da tarefa">
+        </mat-form-field>
 
- <p>Username: {{ username }}</p> -->
- 
+        <mat-form-field appearance="outline">
+          <mat-label>Convidar Usuários</mat-label>
+          <input matInput type="text" placeholder="Digite nome ou email" (input)="onUserSearch($event)">
+          <mat-list *ngIf="(userSearchResults$ | async)?.length">
+            <mat-list-item *ngFor="let user of userSearchResults$ | async" (click)="addUserToInvite(user)">
+              {{ user.username }} ({{ user.email }})
+            </mat-list-item>
+          </mat-list>
+        </mat-form-field>
 
-  <button (click)="sendData()">Criar usuario</button>
+        <div *ngIf="invitedUsers.length > 0" class="invited-users-list">
+          <span *ngFor="let user of invitedUsers" class="invited-user-chip">
+            {{ user.username }} ({{ user.email }})
+            <button mat-icon-button color="warn" (click)="removeUserFromInvite(user)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+        </div>
 
-  
-<!--   <form [formGroup]="roomForm" (ngSubmit)="createRoom()">
-
-    
-
-    <div class="form-group">
-      <label for="name">Nome da sala:</label>
-      <input type="text" id="name" formControlName="name" class="form-control">
-      <div *ngIf="roomForm.controls.name.touched && roomForm.controls.name.errors" class="error-message">
-        nome da sala é requerido.
-      </div>
-    </div>
-
-    <div class="button-group">
-      <button type="submit"  class="btn btn-primary">Criar</button>
-      <button type="button" (click)="cancel()" class="btn btn-secondary">Cancelar</button>
-    </div>
-
-  </form> -->
+        <div class="button-container">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="createRoomForm.invalid || loading"
+            class="create-button"
+          >
+            {{ loading ? 'Criando...' : 'Criar Sala' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
-
-
-<!-- <div class="container">
-    <h2>Criar sala</h2>
-    <form [formGroup]="roomForm" (ngSubmit)="createRoom()">
-      <div class="form-group">
-        <label for="name">Nome da sala:</label>
-        <input type="text" id="name" formControlName="name" class="form-control">
-        <div *ngIf="roomForm.controls.name.touched && roomForm.controls.name.errors" class="error-message">
-          nome da sala é requerido.
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="position">Posição:</label>
-        <select id="position" formControlName="position" class="form-control">
-          <option value="" disabled selected>Selecionar a posição</option>
-          <option *ngFor="let pos of positions" [value]="pos">{{ pos }}</option>
-        </select>
-        <div *ngIf="roomForm.controls.position.touched && roomForm.controls.position.errors" class="error-message">
-          Posição é requerida.
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="invitedUsers">Convidar usuarios (email separado por virgula):</label>
-        <input type="text" id="invitedUsers" class="form-control">
-      </div>
-      <div class="button-group">
-        <button type="submit"  class="btn btn-primary">Criar</button>
-        <button type="button" (click)="cancel()" class="btn btn-secondary">Cancelar</button>
-      </div>
-    </form>
-  </div>
-   -->
-<!-- <h1>Create Room</h1>
-
-<div class="form">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Room Name</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <input [(ngModel)]="name" type="text" placeholder="Enter room name">
-    </mat-card-body>
-  </mat-card>
-
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Position</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <mat-select [(ngModel)]="position">
-        <mat-option *ngFor="let position of positions" [value]="position">
-          {{ position }}
-        </mat-option>
-      </mat-select>
-    </mat-card-body>
-  </mat-card>
-
-  <div class="submit-button">
-    <mat-button type="submit">Create</mat-button>
-    <mat-button type="button">Cancel</mat-button>
-  </div>
-</div> -->

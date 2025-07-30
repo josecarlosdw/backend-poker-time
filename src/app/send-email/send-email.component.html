@@ -1,39 +1,25 @@
-<h1>Send Email</h1>
-
-<div class="form">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Name</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <input [(ngModel)]="name" type="text" placeholder="Enter name">
-    </mat-card-body>
-  </mat-card>
-
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Position</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <mat-select [(ngModel)]="position">
-        <mat-option *ngFor="let position of positions" [value]="position">
-          {{ position }}
-        </mat-option>
-      </mat-select>
-    </mat-card-body>
-  </mat-card>
-
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Email</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <input [(ngModel)]="email" type="email" placeholder="Enter email">
-    </mat-card-body>
-  </mat-card>
-
-  <div class="submit-button">
-    <mat-button type="submit">Send</mat-button>
-    <mat-button type="button">Cancel</mat-button>
-  </div>
-</div>
+<mat-card class="email-card">
+  <mat-card-header>
+    <mat-card-title>Enviar Convite por E-mail</mat-card-title>
+    <mat-card-subtitle>Convide participantes para a sala</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form (ngSubmit)="sendEmail()" class="email-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome da sala</mat-label>
+        <input matInput [(ngModel)]="name" name="name" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Posição</mat-label>
+        <input matInput [(ngModel)]="position" name="position" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail do convidado</mat-label>
+        <input matInput [(ngModel)]="email" name="email" required type="email">
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!name || !position || !email">
+        Enviar Convite
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

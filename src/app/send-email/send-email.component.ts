@@ -1,28 +1,35 @@
-/* import { Component, OnInit } from '@angular/core';
-//import { MatCard, MatCardHeader, MatCardBody, MatCardFooter } from '@angular/material/card';
-//import { MatButton, MatButtonIcon } from '@angular/material/button';
-//import { MatIcon } from '@angular/material/icon';
-import { MailService } from '../email.service';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-send-email',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   templateUrl: './send-email.component.html',
   styleUrls: ['./send-email.component.css']
 })
-export class SendEmailComponent implements OnInit {
+export class SendEmailComponent {
+  name: string = '';
+  position: string = '';
+  email: string = '';
 
-  name?: string;
-  position?: string;
-  email?: string;
-
-  constructor(private mailService: MailService) {}
-
-  ngOnInit() {}
-
-  ngSubmit() {
-    this.mailService.sendEmail(this.name, this.position, this.email);
+  sendEmail() {
+    // Aqui você pode integrar com serviço real de e-mail futuramente
+    alert(`Convite enviado para ${this.email} para a posição ${this.position} na sala de ${this.name}`);
+    this.name = '';
+    this.position = '';
+    this.email = '';
   }
-
-
 }
- */

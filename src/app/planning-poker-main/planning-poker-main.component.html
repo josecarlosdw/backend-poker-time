@@ -1,53 +1,158 @@
-<div class="container">
-
-  <h2>Planning Poker Main</h2>
-    <p>Username: {{ username }}</p>
- 
-    <h2>Selecione um card: {{ selectedCard }}</h2>
-   
-    <!-- Componente para selecionar o card -->
-    <button (click)="selectCard('1')">1</button>
-    <button (click)="selectCard('2')">2</button>
-    <button (click)="selectCard('3')">3</button>
-    <!-- Restante do template -->
-
-    <app-room-list [selectedCard]="selectedCard"></app-room-list>
-
-    <button (click)="sendCard()">Enviar card</button>
-    <!-- <app-chat [selectedCard]="selectedCard" [username]="username"></app-chat>
-    <p></p>
-    <div class="card-list">
-      <div
-        *ngFor="let card of cards"
-        [class.selected]="isCardSelected(card)"
-        (click)="selectCard(card)"
-      >
-        {{ card }}
-      </div>
-    </div>
-
-    <button (click)="resetCards()">Resetar</button>
-
-    <button (click)="selectCard('1')">1</button>
-<button (click)="selectCard('2')">2</button>
-<button (click)="selectCard('3')">3</button> -->
+<div class="planning-poker-container">
+  <div *ngIf="loading" class="loading">
+    Carregando sala...
   </div>
-
   
-<!-- <h1>Planning Poker</h1>
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && !error && room" class="room-content">
+    <mat-card class="room-header">
+      <mat-card-header>
+        <mat-card-title>{{ room.name }}</mat-card-title>
+        <mat-card-subtitle>{{ room.description }}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+    
+    <mat-tab-group class="main-tabs">
+      <!-- Aba de Votação -->
+      <mat-tab label="Votação">
+        <div class="voting-tab">
+          <div class="voting-section">
+            <h3>Selecione seu card: {{ selectedCard || 'Nenhum selecionado' }}</h3>
+            <div class="cards-grid">
+              <button 
+                *ngFor="let card of cards"
+                mat-raised-button 
+                [class.selected]="isCardSelected(card)"
+                (click)="selectCard(card)"
+                class="card-button"
+                [color]="isCardSelected(card) ? 'accent' : 'primary'"
+              >
+                {{ card }}
+              </button>
+            </div>
+            
+            <div class="action-buttons">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                (click)="sendCard()"
+                [disabled]="!selectedCard"
+                class="action-button"
+              >
+                <mat-icon>send</mat-icon>
+                Enviar Card
+              </button>
 
-<div class="cards">
-  <mat-card *ngFor="let card of cards">
-    <mat-card-header>
-      <mat-card-title>{{ card.text }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-body>
-      <mat-button (click)="card.selected = !card.selected">
-        <mat-icon>{{ card.icon }}</mat-icon>
-      </mat-button>
-    </mat-card-body>
-    <mat-card-footer>
-      <mat-button type="submit">Submit</mat-button>
-    </mat-card-footer>
-  </mat-card>
-</div> -->
+              <button 
+                mat-stroked-button 
+                (click)="resetCards()"
+                class="action-button"
+              >
+                <mat-icon>refresh</mat-icon>
+                Resetar
+              </button>
+
+              <button 
+                mat-raised-button 
+                color="accent" 
+                (click)="startVoting()"
+                [disabled]="isVotingActive"
+                class="action-button"
+              >
+                <mat-icon>play_arrow</mat-icon>
+                Iniciar Sessão
+              </button>
+
+              <button 
+                mat-raised-button 
+                color="warn" 
+                (click)="revealVotes()"
+                [disabled]="!isVotingActive"
+                class="action-button"
+              >
+                <mat-icon>visibility</mat-icon>
+                Revelar Votos
+              </button>
+            </div>
+          </div>
+          
+          <!-- Timer -->
+          <app-voting-timer 
+            [duration]="timerDuration"
+            [isActive]="isVotingActive"
+            (timeUp)="onTimeUp()"
+          ></app-voting-timer>
+          
+          <div *ngIf="session && session.status === 'revealed'" class="results-section">
+            <mat-card class="results-card">
+              <mat-card-header>
+                <mat-card-title>Resultado da Rodada</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="results-grid">
+                  <div><strong>Média:</strong> {{ session.result?.average | number:'1.1-2' }}</div>
+                  <div><strong>Mediana:</strong> {{ session.result?.median }}</div>
+                  <div><strong>Mínimo:</strong> {{ session.result?.min }}</div>
+                  <div><strong>Máximo:</strong> {{ session.result?.max }}</div>
+                  <div><strong>Consenso:</strong> <mat-icon color="primary">{{ session.result?.consensus ? 'check_circle' : 'highlight_off' }}</mat-icon></div>
+                </div>
+                <div class="results-chart">
+                  <canvas baseChart
+                    [data]="voteChartData"
+                    [options]="voteChartOptions"
+                    [type]="'bar'"
+                    style="max-height: 260px;"
+                  ></canvas>
+                </div>
+                <div class="results-actions">
+                  <button mat-raised-button color="primary" (click)="startVoting()">Nova Rodada</button>
+                  <button mat-raised-button color="accent" (click)="confirmEstimate()">Confirmar Estimativa</button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="participants-section">
+            <h3>Participantes</h3>
+            <div class="participants-list">
+              <div *ngFor="let participant of room.participants" class="participant">
+                <mat-icon>person</mat-icon>
+                <span>{{ participant.user.username }}</span>
+                <ng-container *ngIf="session">
+                  <ng-container *ngIf="session.status === 'revealed'; else votingStatus">
+                    <span class="vote-value">{{ getVoteValue(participant.user._id) || '-' }}</span>
+                  </ng-container>
+                  <ng-template #votingStatus>
+                    <mat-icon *ngIf="hasVoted(participant.user._id)" color="primary">check_circle</mat-icon>
+                    <mat-icon *ngIf="!hasVoted(participant.user._id)" color="warn">hourglass_empty</mat-icon>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Aba de Histórico -->
+      <mat-tab label="Histórico">
+        <div class="history-tab">
+          <app-session-history 
+            [sessions]="sessions"
+            (viewSession)="onViewSession($event)"
+            (exportSession)="onExportSession($event)"
+          ></app-session-history>
+        </div>
+      </mat-tab>
+
+      <!-- Aba de Chat -->
+      <mat-tab label="Chat">
+        <div class="chat-tab">
+          <app-chat [roomId]="room._id"></app-chat>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

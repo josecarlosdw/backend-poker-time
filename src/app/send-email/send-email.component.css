@@ -1,27 +1,22 @@
-.form {
-    margin: 10px;
+.email-card {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .email-card {
+    padding: 0.5rem;
   }
-  
-  .mat-card {
-    margin: 10px;
-  }
-  
-  .mat-card-header {
-    border-bottom: 1px solid lightgray;
-  }
-  
-  .mat-card-title {
-    font-size: 16px;
-  }
-  
-  .mat-card-body {
-    padding: 10px;
-  }
-  
-  .submit-button {
-    margin-top: 10px;
-  }
-  
-  .mat-button {
-    width: 50px;
-  }
+}

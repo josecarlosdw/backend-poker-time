@@ -6,8 +6,13 @@ import { PlanningPokerMainComponent } from './planning-poker-main/planning-poker
 import { CreateRoomComponent } from './create-room/create-room.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RoomListComponent } from './room-list/room-list.component';
-import { RoomService } from './room.service';
 import { ChatComponent } from './chat/chat.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { RoomService } from './services/room.service';
 
 @NgModule({
   declarations: [
@@ -21,7 +26,12 @@ import { ChatComponent } from './chat/chat.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatListModule,
+    MatButtonModule,
+    MatInputModule
   ],
   providers: [RoomService],
   bootstrap: [AppComponent]

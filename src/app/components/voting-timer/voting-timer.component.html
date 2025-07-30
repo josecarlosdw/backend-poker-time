@@ -1,0 +1,60 @@
+<mat-card class="timer-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>timer</mat-icon>
+      Timer de Votação
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <div class="timer-display">
+      <div class="time-left">{{ formatTime(timeLeft) }}</div>
+      <mat-progress-bar 
+        [value]="progress" 
+        [color]="timeLeft < 60 ? 'warn' : 'primary'"
+        class="timer-progress"
+      ></mat-progress-bar>
+    </div>
+    
+    <div class="timer-controls">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="startTimer()"
+        [disabled]="!isActive || timerSubscription !== undefined"
+      >
+        <mat-icon>play_arrow</mat-icon>
+        Iniciar
+      </button>
+      
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="pauseTimer()"
+        [disabled]="!isActive || isPaused || timerSubscription === undefined"
+      >
+        <mat-icon>pause</mat-icon>
+        Pausar
+      </button>
+      
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="resumeTimer()"
+        [disabled]="!isActive || !isPaused"
+      >
+        <mat-icon>play_arrow</mat-icon>
+        Continuar
+      </button>
+      
+      <button 
+        mat-stroked-button 
+        (click)="resetTimer()"
+        [disabled]="!isActive"
+      >
+        <mat-icon>refresh</mat-icon>
+        Resetar
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card> 

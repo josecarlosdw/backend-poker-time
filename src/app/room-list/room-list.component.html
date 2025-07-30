@@ -1,20 +1,160 @@
-<div class="container">  
-
-  <app-chat></app-chat>
-
-    <h2>Salas criadas</h2>
-
-    <p>Username: {{ username }}</p>
-    <p>card selecionado: {{ selectedCard }}</p>
-
-    <div *ngFor="let user of users">
-      <p>{{ user.username }} - {{ user.selectedCard }}</p>
+<div class="room-list-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>meeting_room</mat-icon>
+        Salas de Planning Poker
+      </h1>
+      <p class="page-subtitle">Gerencie e participe de sessões de estimativa</p>
     </div>
-    <button (click)="calculateAverage()">Calculate Average</button>
-    <p>Average: {{ average }}</p>
-
-    <app-chat></app-chat>  
-
-
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="createRoom()" class="create-btn">
+        <mat-icon>add</mat-icon>
+        Criar Nova Sala
+      </button>
+    </div>
   </div>
+
+  <!-- Filters and Search -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Buscar salas..." [(ngModel)]="searchTerm">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="statusFilter">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="active">Ativas</mat-option>
+            <mat-option value="waiting">Aguardando</mat-option>
+            <mat-option value="completed">Concluídas</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Ordenar por</mat-label>
+          <mat-select [(ngModel)]="sortBy">
+            <mat-option value="name">Nome</mat-option>
+            <mat-option value="created">Data de Criação</mat-option>
+            <mat-option value="participants">Participantes</mat-option>
+            <mat-option value="lastActivity">Última Atividade</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Carregando salas...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredRooms.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">meeting_room</mat-icon>
+    <h3>Nenhuma sala encontrada</h3>
+    <p>Não há salas disponíveis ou os filtros aplicados não retornaram resultados.</p>
+    <button mat-raised-button color="primary" (click)="createRoom()">
+      <mat-icon>add</mat-icon>
+      Criar Primeira Sala
+    </button>
+  </div>
+
+  <!-- Rooms Grid -->
+  <div *ngIf="!loading && filteredRooms.length > 0" class="rooms-grid">
+    <mat-card *ngFor="let room of filteredRooms" class="room-card" [class.room-active]="room.isActive">
+      <mat-card-header>
+        <div class="room-header">
+          <div class="room-title-section">
+            <h3 class="room-title">{{ room.name }}</h3>
+            <div class="room-badges">
+              <mat-chip *ngIf="room.isPrivate" color="warn" selected>
+                <mat-icon>lock</mat-icon>
+                Privada
+              </mat-chip>
+              <mat-chip *ngIf="room.isActive" color="accent" selected>
+                <mat-icon>play_circle</mat-icon>
+                Ativa
+              </mat-chip>
+            </div>
+          </div>
+          <button mat-icon-button [matMenuTriggerFor]="roomMenu" class="room-menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #roomMenu="matMenu">
+            <button mat-menu-item (click)="enterRoom(room)">
+              <mat-icon>meeting_room</mat-icon>
+              <span>Entrar</span>
+            </button>
+            <button mat-menu-item (click)="viewRoomDetails(room)">
+              <mat-icon>info</mat-icon>
+              <span>Detalhes</span>
+            </button>
+            <button mat-menu-item (click)="exportRoomData(room)">
+              <mat-icon>download</mat-icon>
+              <span>Exportar</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="deleteRoom(room)" class="delete-action">
+              <mat-icon>delete</mat-icon>
+              <span>Excluir</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <p class="room-description">{{ room.description || 'Nenhuma descrição fornecida.' }}</p>
+        
+        <div class="room-stats">
+          <div class="stat-item">
+            <mat-icon>people</mat-icon>
+            <span>{{ room.participants?.length || 0 }} participantes</span>
+          </div>
+          <div class="stat-item">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ formatDate(room.createdAt) }}</span>
+          </div>
+          <div class="stat-item" *ngIf="room.lastActivity">
+            <mat-icon>update</mat-icon>
+            <span>{{ formatTimeAgo(room.lastActivity) }}</span>
+          </div>
+        </div>
+        
+        <div class="room-tags" *ngIf="room.tags && room.tags.length > 0">
+          <mat-chip *ngFor="let tag of room.tags" class="tag-chip">
+            {{ tag }}
+          </mat-chip>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="enterRoom(room)" class="enter-btn">
+          <mat-icon>meeting_room</mat-icon>
+          Entrar na Sala
+        </button>
+        <button mat-stroked-button (click)="viewRoomDetails(room)">
+          <mat-icon>info</mat-icon>
+          Detalhes
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && filteredRooms.length > 0" class="pagination-container">
+    <mat-paginator 
+      [length]="totalRooms"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>
   

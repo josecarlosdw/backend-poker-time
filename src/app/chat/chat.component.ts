@@ -1,72 +1,61 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { Subscription } from 'rxjs';
 
-interface Message {
-  username: string;
-  sender: string;
-  content: string;
-  selectedCard?: string;
-}
+import { WebSocketService, ChatMessage } from '../services/websocket.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-chat',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
+export class ChatComponent implements OnInit, OnDestroy {
+  @Input() roomId!: string;
+  messages: ChatMessage[] = [];
+  chatForm: FormGroup;
+  currentUser: any = null;
+  private subs: Subscription[] = [];
 
-export class ChatComponent implements OnInit {
-  messages: Message[] = [];
-  private socket: Socket;
-  message!: string;
-
-  @Input() username: string = '';
-  @Input() roomName: string = '';
-  @Input() selectedCard: string = '';
-
-  constructor() {
-    this.socket = io('http://localhost:3000');
-  }
-
-  ngOnInit() {
-    this.socket.on('chatMessage', (message: Message) => {
-      this.messages.push(message);
-    });
-
-    this.socket.on('calculateAverage', () => {
-      this.calculateAverage();
+  constructor(
+    private ws: WebSocketService,
+    private authService: AuthService,
+    private formBuilder: FormBuilder
+  ) {
+    this.chatForm = this.formBuilder.group({
+      message: ['', [Validators.required, Validators.maxLength(500)]]
     });
   }
 
-  sendMessage() {
-    const message: Message = {
-      sender: this.username,
-      content: this.message,
-      selectedCard: this.selectedCard,
-      username: this.username
-    };
-
-    // Send the message to the server
-    this.socket.emit('chatMessage', message);
-
-    // Emit the 'calculateAverage' event to request the calculation of the selectedCards average
-    this.socket.emit('calculateAverage');
-
-    // Clear the message field
-    this.message = '';
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => this.currentUser = user);
+    this.subs.push(
+      this.ws.onChatMessage().subscribe(msg => {
+        this.messages.push(msg);
+      })
+    );
   }
 
-  calculateAverage() {
-    const numericCards = this.messages
-      .filter((message: Message) => !isNaN(parseFloat(message.selectedCard || '')))
-      .map((message: Message) => parseFloat(message.selectedCard || ''));
-  
-    if (numericCards.length > 0) {
-      const sum = numericCards.reduce((acc, card) => acc + card, 0);
-      const average = sum / numericCards.length;
-  
-      console.log('Average:', average);
-    } else {
-      console.log('No numeric values found');
-    }
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+  }
+
+  sendMessage(): void {
+    if (this.chatForm.invalid || !this.roomId || !this.currentUser) return;
+    const message = this.chatForm.value.message;
+    this.ws.sendChatMessage(this.roomId, this.currentUser.username, message);
+    this.chatForm.reset();
   }
 }
